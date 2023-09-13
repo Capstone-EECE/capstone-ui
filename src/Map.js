@@ -55,7 +55,7 @@ const Map = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <Button type="submit" variant="contained" color="primary">
-            Submit
+            Center on Me
           </Button>
         </div>
       </form>
