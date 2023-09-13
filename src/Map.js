@@ -66,7 +66,7 @@ const Map = () => {
         <GoogleMap
           mapContainerClassName="map-container"
           center={mapCenter}
-          zoom={10}
+          zoom={17.5}
         >
           <Marker position={{ lat: parseFloat(latitude), lng: parseFloat(longitude) }} />
         </GoogleMap>
