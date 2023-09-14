@@ -1,6 +1,5 @@
-import React from 'react';
-import Map from "./Map"
-import PlatformClient from './api/PlatformClient';
+import Map from "./components/Map"
+import { platformClient } from './api/PlatformClient';
 import { Button } from '@mui/material';
 
 
@@ -8,13 +7,11 @@ const App = () => {
 
   const handleBackendRequest = async () => {
     try {
-    const response = await PlatformClient.fetchData('capstone')
+    const response = await platformClient.fetchData('capstone')
     console.log(response)
-    console.log(process.env.BACKEND_PLATFORM_URLPLATFORM_URL)
     } catch(error) {
       console.log(error)
     }
-
 
   }
   return (

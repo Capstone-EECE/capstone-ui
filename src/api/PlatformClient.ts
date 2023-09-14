@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { config } from "../config";
 
 class PlatformClient {
   private apiUrl;
   
   constructor() {
-    this.apiUrl = 'http://127.0.0.1:5000' //process.env.BACKEND_PLATFORM_URL
+    this.apiUrl = config.apiUrl
   }
 
 
@@ -36,15 +37,14 @@ class PlatformClient {
         throw new Error(`Request failed with status: ${response.status}`);
       }
 
-      // Extract the response data
       const data = response.data;
 
       return data;
     } catch (error) {
       console.error("Error:", error);
-      throw error; // Propagate the error to the caller
+      throw error;
     }
   }
 }
 
-export default new PlatformClient()
+export const platformClient = new PlatformClient()
