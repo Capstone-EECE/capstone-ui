@@ -1,4 +1,4 @@
-import Map from "./components/Map"
+import ExampleHeatmap from "./components/Map2"
 import { platformClient } from './api/PlatformClient';
 import { Button } from '@mui/material';
 
@@ -17,7 +17,7 @@ const App = () => {
   return (
     <div>
       <Button onClick={handleBackendRequest} type="submit" variant="contained" color="secondary"> CLICK ME </Button>
-      <Map/>
+      <ExampleHeatmap/>
     </div>
   );
 };
