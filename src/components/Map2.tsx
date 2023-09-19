@@ -1,12 +1,14 @@
+// eslint-disable-next-line node/no-extraneous-import
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 
-const defaultCoordinates = {lat: 42.339162, lng: -71.088117};
 
-function Heatmap() {
+
+function Map({latitude, longitude}) {
   const [map, setMap] = useState(null);
   const [heatmap, setHeatmap] = useState(null);
+
 
   useEffect(() => {
     // Load the Google Maps JavaScript API
@@ -18,7 +20,6 @@ function Heatmap() {
     document.head.appendChild(script);
 
     return () => {
-      // Clean up when the component unmounts
       if (heatmap) {
         heatmap.setMap(null);
       }
@@ -27,12 +28,12 @@ function Heatmap() {
       }
       document.head.removeChild(script);
     };
-  }, []);
+  }, [latitude, longitude]);
 
   function initializeMap() {
     let map = new google.maps.Map(document.getElementById('map'), {
       zoom: 13,
-      center: { lat: defaultCoordinates.lat, lng: defaultCoordinates.lng },
+      center: { lat: latitude, lng: longitude },
       mapTypeId: 'satellite',
     });
 
@@ -602,4 +603,4 @@ function Heatmap() {
   );
 }
 
-export default Heatmap;
+export default Map;
