@@ -35,8 +35,8 @@ const App = () => {
     } catch(error) {
       console.log(error)
     }
-
   }
+
   return (
     <div>
       <Typography>Latitude: {mapCenter.lat}</Typography>
