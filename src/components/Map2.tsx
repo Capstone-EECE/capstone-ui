@@ -2,6 +2,7 @@
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { platformClient } from '../api/PlatformClient';
+import * as d3 from 'd3'
 
 
 
@@ -9,6 +10,7 @@ import { platformClient } from '../api/PlatformClient';
 function Map({latitude, longitude, points}) {
   const [map, setMap] = useState(null);
   const [heatmap, setHeatmap] = useState(null);
+  const [overlay, setOverlay] = useState(null);
 
 
   useEffect(() => {
@@ -27,6 +29,7 @@ function Map({latitude, longitude, points}) {
       if (map) {
         map.setMap(null);
       }
+
       document.head.removeChild(script);
     };
   }, [latitude, longitude]);
@@ -35,7 +38,6 @@ function Map({latitude, longitude, points}) {
     let map = new google.maps.Map(document.getElementById('map'), {
       zoom: 13,
       center: { lat: latitude, lng: longitude },
-      mapTypeId: 'satellite',
     });
 
     let heatmap = new google.maps.visualization.HeatmapLayer({
@@ -45,6 +47,24 @@ function Map({latitude, longitude, points}) {
 
     setMap(map);
     setHeatmap(heatmap);
+
+    const overlay = new google.maps.OverlayView();
+    overlay.onAdd = addOverlay;
+    overlay.draw = drawOverlay;
+    overlay.setMap(map);
+    setOverlay(overlay);
+  }
+
+  function addOverlay() {
+    const layer = d3.select(this.getPanes().overlayLayer).append('div').attr('class', 'overlay');
+    const img = layer.append('img').attr('src', '/drone.png').style('width', '75px').style('height', '75px');
+  }
+  
+  function drawOverlay() {
+    const projection = this.getProjection();
+    const pixel = projection.fromLatLngToDivPixel(new google.maps.LatLng(latitude, longitude));
+    const img = d3.select('.overlay img');
+    img.style('left', pixel.x - 25 + 'px').style('top', pixel.y - 25 + 'px'); // Adjust the positioning as needed
   }
 
   function toggleHeatmap() {
