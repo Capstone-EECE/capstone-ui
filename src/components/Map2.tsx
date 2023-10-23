@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3'
 
-function Map({ latitude, longitude, points }) {
+function Map({ latitude, longitude, points, droneLocation }) {
   const [map, setMap] = useState(null);
   const [heatmap, setHeatmap] = useState(null);
 
@@ -11,9 +11,9 @@ function Map({ latitude, longitude, points }) {
     if (window.google) {
       initializeMap();
     }
-  }, [latitude, longitude, points]);
+  }, [latitude, longitude, points, droneLocation]);
 
-  async function initializeMap() {
+  function initializeMap() {
     let map = new window.google.maps.Map(document.getElementById('map'), {
       zoom: 13,
       center: { lat: latitude, lng: longitude },
