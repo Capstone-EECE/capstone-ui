@@ -2,14 +2,18 @@ import Map from "./components/Map2"
 import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import io from 'socket.io-client'; // Breaks callback functionality by eliminating unused import
+import {triggerCustomEvent, onCustomEventResponse} from './api/SocketManager'
 
 
 const App = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
   const [points, setPoints] = useState(null)
   //const [dronePos, setDronePos] = useState({latitude: null, longitude: null})
-  const [droneLocation, setDroneLocation] = useState(null);
-  const [listening, setListening] = useState(false);
+  const [droneLocation, setDroneLocation] = useState('');
+  //const [listening, setListening] = useState(false);
+  //-------------------------------------------------------------------------------
+  const [buttonStatus, setButtonStatus] = useState(false)
 
   
   /**
@@ -23,37 +27,16 @@ const App = () => {
       console.log("Browser geolocation not enabled")
     }
 
+    onCustomEventResponse((data) => {
+      console.log(data);
+    }); 
+
   }, [])
-
-/*   useEffect(() => {
-
-    const handleLocationUpdate = (coordinates) => {
-      setDroneLocation(coordinates);
-    };
-
-    if (listening) {
-      console.log("I AM LISTENING")
-      platformClient.listenToDroneLocationUpdates(handleLocationUpdate);
-    } else {
-      console.log("NOT ANYMORE")
-      platformClient.stopListeningToDroneLocationUpdates();
-    }
-
-    return () => {
-      platformClient.stopListeningToDroneLocationUpdates();
-    };
-  }, [listening]);
-
-  const toggleListening = () => {
-    setListening(!listening);
-  }; */
-
  
   function handleGeoLocationCenter(position) {
     const coords = position.coords;
     console.log(coords)
     setMapCenter({ lat: parseFloat(coords.latitude), lng: parseFloat(coords.longitude) });
-    console.log('Position Updated')
   };
 
   async function getPoints() {
@@ -72,22 +55,28 @@ const App = () => {
     }      
   }
 
-  function handleSocketConnection() {
-    const handleLocationUpdate = (coordinates) => {
-      setDroneLocation(coordinates);
-    };
-    platformClient.listenToDroneLocationUpdates(handleLocationUpdate);
+
+  //----------------------------------------------------------------------------------------------------------------------------
+
+  const handleClick = () => {
+    if (buttonStatus === false) {
+      setButtonStatus(true)
+    } else  {
+      setButtonStatus(false)
+    }
   }
-  
+
+
+
+  //----------------------------------------------------------------------------------------------------------------------------
 
   return (
     <div>
       <Typography>Latitude: {mapCenter.lat}</Typography>
       <Typography>Longitude: {mapCenter.lng}</Typography>
       <Button onClick={getPoints} type="submit" variant="contained" color="primary"> Request Readings </Button>
-      <Button onClick={handleSocketConnection} type="submit" variant="contained" color="primary">
-        {listening ? 'Stop Listening' : 'Start Listening'}
-      </Button>
+      <Button onClick={handleClick} type="submit" variant="contained" color="primary"> {buttonStatus? "Disonnect drone" : "Connect drone"} </Button>
+      <Button onClick={triggerCustomEvent} type="submit" variant="contained" color="primary"> {droneLocation} CONNECT DRONE II </Button>
       <Map latitude={mapCenter.lat} longitude={mapCenter.lng} points={points} droneLocation={droneLocation}/>
     </div>
   );

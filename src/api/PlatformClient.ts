@@ -1,36 +1,11 @@
 import axios from 'axios';
 import { config } from "../config";
-import io, { Socket } from 'socket.io-client';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 
 class PlatformClient {
   private apiUrl: string;
-  private socket: Socket<DefaultEventsMap, DefaultEventsMap>;
   
   constructor() {
     this.apiUrl = config.apiUrl
-    this.socket = io(`${config.apiUrl}/drone`)
-  }
-
-
-  /**
-   * Start listening to drone location updates
-   * @param {function} callback - A function to handle the incoming location updates
-   */
-  async listenToDroneLocationUpdates(callback: (arg0: any) => void) {
-    console.log(`${config.apiUrl}/drone`)
-    console.log(this.socket)
-    this.socket.on('gpsUpdate', (coordinates) => {
-      // Call the provided callback with the updated coordinates
-      callback(coordinates);
-    });
-  }
-
-  /**
-   * Stop listening to drone location updates
-   */
-  async stopListeningToDroneLocationUpdates() {
-      this.socket.off('gpsUpdate');
   }
 
   /**
