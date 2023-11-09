@@ -2,32 +2,23 @@ import axios from 'axios';
 import { config } from "../config";
 
 class PlatformClient {
-  private apiUrl;
+  private apiUrl: string;
   
   constructor() {
     this.apiUrl = config.apiUrl
   }
 
-
   /**
-   * STUBS
+   * [GET] the thickness for the current location 
    */
-  async getDroneLocation() {}
+  async getThickness(longitude: string, latitude: string) {
 
-  /**
-   * STUBS
-   */
-  async requestReading() {}
-
-  /**
-   * STUBS
-   */
-  async getThickness(longitude: string, latitude: string) {}
+    return await this.fetchData('capstone/points')
+  }
 
 
   async fetchData(endpoint: string, queryParams = {}) {
     try {
-        console.log(`${this.apiUrl}/${endpoint}`)
       const response = await axios.get(`${this.apiUrl}/${endpoint}`, {
         params: queryParams,
       });
