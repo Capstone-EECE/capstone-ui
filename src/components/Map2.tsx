@@ -40,9 +40,9 @@ function Map({ latitude, longitude, points, droneLocation }) {
 
   function drawOverlay() {
     const projection = this.getProjection();
-    const pixel = projection.fromLatLngToDivPixel(new window.google.maps.LatLng(latitude, longitude));
+    const pixel = projection.fromLatLngToDivPixel(new window.google.maps.LatLng(0, 0));
     const img = d3.select('.overlay img');
-    img.style('left', pixel.x - 25 + 'px').style('top', pixel.y - 25 + 'px');
+    img.style('left', pixel.x - 300 + 'px').style('top', pixel.y - 0 + 'px');
   }
 
   function toggleHeatmap() {

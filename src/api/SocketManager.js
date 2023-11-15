@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import { config } from "../config";
 
 
 const socket = io("localhost:5000", {
@@ -24,7 +23,7 @@ const socket = io("localhost:5000", {
 //emits a custom event
 export const triggerCustomEvent = () => {
     console.log("Executing request")
-    socket.emit('hello', "world")
+    socket.emit('connect_drone')
 };
 
 /**
@@ -32,8 +31,7 @@ export const triggerCustomEvent = () => {
  * @param {*} callback Call the callback function from App.js on socket connection
  */
 export const onCustomEventResponse = (callback) => {
-    socket.on('response', (data) => {
-      console.log("ME?", data); // Log the response data
+    socket.on('GPS', (data) => {
       if (callback) {
         callback(data); // 
       }
