@@ -1,20 +1,58 @@
 import axios from 'axios';
 import { config } from "../config";
 
+// TODO: Add device ID in query parameters
 class PlatformClient {
   private apiUrl: string;
   
   constructor() {
-    this.apiUrl = config.apiUrl
+    this.apiUrl = config.apiUrl + 'frontend/'
   }
 
   /**
-   * [GET] the thickness for the current location 
+   * [GET] Query devices status 
    */
-  async getThickness(longitude: string, latitude: string) {
+  async connectDrone() {
 
-    return await this.fetchData('capstone/points')
+    return await this.fetchData('drone')
   }
+
+  /**
+   * [GET] instantiate GPS coordinate intake.
+   */
+    async startGPSReading() {
+
+    
+      return await this.fetchData('coordinates/start')
+    }
+  
+    /**
+     * [GET] Stop sensor intake.
+     */
+    async stopGPSReading() {
+  
+      return await this.fetchData('coordinates/stop')
+    }
+  
+
+  /**
+   * [GET] instantiate sensor intake for readings
+   */
+  async startSensorReading() {
+
+    
+    return await this.fetchData('points/start')
+  }
+
+  /**
+   * [GET] Stop sensor intake
+   */
+  async stopSensorReading() {
+
+    return await this.fetchData('points/stop')
+  }
+
+
 
 
   async fetchData(endpoint: string, queryParams = {}) {

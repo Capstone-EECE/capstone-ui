@@ -3,17 +3,16 @@ import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client'; // Breaks callback functionality by eliminating unused import
-import {triggerCustomEvent, onCustomEventResponse} from './api/SocketManager'
+import {onCustomEventResponse} from './api/SocketManager'
 
 
 const App = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+  const [droneConnected, setDroneConnected] = useState(false)
+  const [pointButtonStatus, setPointButtonStatus] = useState(false)
   const [points, setPoints] = useState(null)
-  //const [dronePos, setDronePos] = useState({latitude: null, longitude: null})
-  const [droneLocation, setDroneLocation] = useState('');
-  //const [listening, setListening] = useState(false);
-  //-------------------------------------------------------------------------------
-  const [buttonStatus, setButtonStatus] = useState(false)
+  const [gpsButtonStatus, setgpsButtonStatus] = useState(false)
+  const [coordinates, setCoordinates] = useState(null)
 
   
   /**
@@ -35,34 +34,59 @@ const App = () => {
  
   function handleGeoLocationCenter(position) {
     const coords = position.coords;
-    console.log(coords)
     setMapCenter({ lat: parseFloat(coords.latitude), lng: parseFloat(coords.longitude) });
   };
 
-  async function getPoints() {
-    const googleType = []
-    try {
-      
-      const response = await platformClient.getThickness()
-      for (const coor of response) {
-        const latitude = coor[0];
-        const longitude = coor[1];
-        googleType.push(new google.maps.LatLng(latitude, longitude))
-      }
-      setPoints(googleType)
-    } catch(error) {
-      console.log(error)
-    }      
-  }
-
-
   //----------------------------------------------------------------------------------------------------------------------------
 
-  const handleClick = () => {
-    if (buttonStatus === false) {
-      setButtonStatus(true)
+
+  const connectToDrone = async () => {
+    if (droneConnected === false) {
+      setDroneConnected(true)
+      // connect to server socket
+    } else {
+      setDroneConnected(false)
+    }
+  }
+
+  const pointsEventHandler = async () => {
+    if (pointButtonStatus === false) {
+      setPointButtonStatus(true)
+      const googleType = []
+      try {
+        
+        const response = await platformClient.startSensorReading()
+
+        // SOCKET (?)
+        for (const coor of response) {
+          const latitude = coor[0];
+          const longitude = coor[1];
+          googleType.push(new google.maps.LatLng(latitude, longitude))
+        }
+        setPoints(googleType)
+      } catch(error) {
+        console.log(error)
+      } 
     } else  {
-      setButtonStatus(false)
+      setPointButtonStatus(false)
+      await platformClient.stopSensorReading()
+    }
+  }
+
+  const coordinateEventHandler = async () => {
+    if (gpsButtonStatus === false) {
+      setgpsButtonStatus(true)
+      try {
+        
+        const response = await platformClient.startGPSReading()
+        setCoordinates(response)
+        // SOCKET (?)
+      } catch(error) {
+        console.log(error)
+      } 
+    } else  {
+      setgpsButtonStatus(false)
+      await platformClient.startGPSReading()
     }
   }
 
@@ -74,10 +98,10 @@ const App = () => {
     <div>
       <Typography>Latitude: {mapCenter.lat}</Typography>
       <Typography>Longitude: {mapCenter.lng}</Typography>
-      <Button onClick={getPoints} type="submit" variant="contained" color="primary"> Request Readings </Button>
-      <Button onClick={handleClick} type="submit" variant="contained" color="primary"> {buttonStatus? "Disonnect drone" : "Connect drone"} </Button>
-      <Button onClick={triggerCustomEvent} type="submit" variant="contained" color="primary"> {droneLocation} CONNECT DRONE II </Button>
-      <Map latitude={mapCenter.lat} longitude={mapCenter.lng} points={points} droneLocation={droneLocation}/>
+      <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
+      <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
+      <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
+      <Map latitude={mapCenter.lat} longitude={mapCenter.lng} points={points} droneLocation={0}/>
     </div>
   );
 };
