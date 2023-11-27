@@ -1,43 +1,58 @@
 import io from 'socket.io-client';
 
+let socket = null;
 
-const socket = io("localhost:5000", {
+export const connectSocket = () => {
+  socket = io("localhost:5235", {
     transport: ['websocket'],
     cors: {
       origin: "http://localhost:3000/"
-    }
+    },
+    reconnection: true,
+    reconnectionAttempts: 5,  
+    reconnectionDelay: 1000,  
   });
-
-/**
- * Built in socket connect event handler (Signature Doesnt allow a callback variable)
- * @param {*} callback 
- */
- export const onSocketConnect = (callback) => {
-    socket.on('connect', (data) => {
-      if (callback) {
-        callback(); // Call the callback function on socket connection
-      }
-    });
-  }; 
-
-//emits a custom event
-export const triggerCustomEvent = () => {
-    console.log("Executing request")
-    socket.emit('connect_drone')
 };
 
-/**
- * Event listener for response event emmited from server
- * @param {*} callback Call the callback function from App.js on socket connection
- */
-export const onCustomEventResponse = (callback) => {
-    socket.on('GPS', (data) => {
+export const onSocketConnect = (callback) => {
+  if (socket) {
+    socket.on('connect', (data) => {
       if (callback) {
-        callback(data); // 
+        callback();
       }
     });
-  }; 
+  } else {
+    console.error('Socket is not initialized. Call connectSocket() first.');
+  }
+};
+
+export const triggerCustomEvent = () => {
+  if (socket) {
+    console.log("Executing request");
+    socket.emit('connect_drone');
+  } else {
+    console.error('Socket is not initialized. Call connectSocket() first.');
+  }
+};
+
+export const onCustomEventResponse = (callback) => {
+  if (socket) {
+    socket.on('GPS', (data) => {
+      if (callback) {
+        callback(data);
+      }
+    });
+  } else {
+    console.error('Socket is not initialized. Call connectSocket() first.');
+  }
+};
+
 
 export const disconnectSocket = () => {
-  socket.disconnect();
+  if (socket) {
+    socket.disconnect();
+    socket = null; // Reset socket to null after disconnecting
+  } else {
+    console.error('Socket is not initialized. Call connectSocket() first.');
+  }
 };

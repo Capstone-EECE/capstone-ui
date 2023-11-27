@@ -6,15 +6,14 @@ class PlatformClient {
   private apiUrl: string;
   
   constructor() {
-    this.apiUrl = config.apiUrl + 'frontend/'
+    this.apiUrl = config.apiUrl + '/frontend'
   }
 
   /**
    * [GET] Query devices status 
    */
   async connectDrone() {
-
-    return await this.fetchData('drone')
+    return await this.fetchData('connect')
   }
 
   /**
@@ -39,8 +38,6 @@ class PlatformClient {
    * [GET] instantiate sensor intake for readings
    */
   async startSensorReading() {
-
-    
     return await this.fetchData('points/start')
   }
 
