@@ -3,7 +3,7 @@ import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client'; // Breaks callback functionality by eliminating unused import
-import {onCustomEventResponse} from './api/SocketManager'
+import {onCustomEventResponse, connectSocket, disconnectSocket} from './api/SocketManager'
 
 
 const App = () => {
@@ -26,10 +26,7 @@ const App = () => {
       console.log("Browser geolocation not enabled")
     }
 
-    onCustomEventResponse((data) => {
-      console.log(data);
-    }); 
-
+    onCustomEventResponse()
   }, [])
  
   function handleGeoLocationCenter(position) {
@@ -43,11 +40,15 @@ const App = () => {
   const connectToDrone = async () => {
     if (droneConnected === false) {
       setDroneConnected(true)
-      // connect to server socket
+      connectSocket()
+      await platformClient.connectDrone()
     } else {
       setDroneConnected(false)
+      disconnectSocket()
     }
   }
+
+  
 
   const pointsEventHandler = async () => {
     if (pointButtonStatus === false) {
@@ -101,7 +102,7 @@ const App = () => {
       <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
       <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
       <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
-      <Map latitude={mapCenter.lat} longitude={mapCenter.lng} points={points} droneLocation={0}/>
+      <Map points={points} droneLocation={0} droneConnected={droneConnected} mapCenter={mapCenter}/>
     </div>
   );
 };

@@ -1,49 +1,99 @@
 // eslint-disable-next-line react-hooks/exhaustive-deps
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
-import * as d3 from 'd3'
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBus } from "@fortawesome/free-solid-svg-icons";
 
-function Map({ latitude, longitude, points, droneLocation }) {
+
+let newMarker;
+let newMap;
+
+function Map({points, droneLocation, droneConnected, mapCenter }) {
   const [map, setMap] = useState(null);
   const [heatmap, setHeatmap] = useState(null);
+  const [marker, setMarker] = useState(null)
 
   useEffect(() => {
     if (window.google) {
       initializeMap();
     }
-  }, [latitude, longitude, points, droneLocation]);
+  }, [points, droneLocation, mapCenter, droneConnected]);
 
   function initializeMap() {
-    let map = new window.google.maps.Map(document.getElementById('map'), {
-      zoom: 13,
-      center: { lat: latitude, lng: longitude },
+    newMap = new window.google.maps.Map(document.getElementById('map'), {
+      zoom: 9,
+      center: { lat: mapCenter.lat, lng: mapCenter.lng },
     });
 
     let heatmap = new window.google.maps.visualization.HeatmapLayer({
       data: points? points : [],
-      map: map,
+      map: newMap,
     });
 
-    setMap(map);
+    newMarker = new window.google.maps.Marker({
+      position: { lat: mapCenter.lat, lng: mapCenter.lng },
+      map: newMap,
+      icon: {
+        path: faBus.icon[4] as string,
+        fillColor: "#0000ff",
+        fillOpacity: 1,
+        anchor: new google.maps.Point(
+          faBus.icon[0] / 2, // width
+          faBus.icon[1] // height
+        ),
+        strokeWeight: 1,
+        strokeColor: "#ffffff",
+        scale: 0.075,
+      },
+      title: "FontAwesome SVG Marker",
+      draggable: true
+    });
+
+    setMap(newMap);
+    setMarker(newMarker);
     setHeatmap(heatmap);
 
-    const overlay = new window.google.maps.OverlayView();
-    overlay.onAdd = addOverlay;
-    overlay.draw = drawOverlay;
-    overlay.setMap(map);
+    window.google.maps.event.addListenerOnce(newMarker, 'position_changed', () => {
+      updateMapCenter(newMarker.getPosition().toJSON())
+    });
+
+    simulateRealTimeUpdates();
+
+
+
+
+
+
+    
   }
 
-  function addOverlay() {
-    const layer = d3.select(this.getPanes().overlayLayer).append('div').attr('class', 'overlay');
-    layer.append('img').attr('src', '/drone.png').style('width', '75px').style('height', '75px');
-  }
+  const simulateRealTimeUpdates = () => {
+    setInterval(() => {
+      if (marker) {
+        const randomLatOffset = Math.random() * 0.01;
+        const randomLngOffset = Math.random() * 0.01;
+        const newLocation = {
+          lat: newMarker.getPosition().lat() + randomLatOffset,
+          lng: newMarker.getPosition().lng() + randomLngOffset,
+        };
+  
+        newMarker.setPosition(newLocation);
+        updateMapCenter(newLocation)
+      }
+    }, 1000)
+  };
 
-  function drawOverlay() {
-    const projection = this.getProjection();
-    const pixel = projection.fromLatLngToDivPixel(new window.google.maps.LatLng(0, 0));
-    const img = d3.select('.overlay img');
-    img.style('left', pixel.x - 300 + 'px').style('top', pixel.y - 0 + 'px');
-  }
+  /**
+   * Updates the map center to the location
+   * @param location Lat Lng
+   */
+  const updateMapCenter = (location) => {
+    if (map) {
+      newMap.setCenter(location);
+    }
+    
+  };
+
 
   function toggleHeatmap() {
     if (heatmap) {
