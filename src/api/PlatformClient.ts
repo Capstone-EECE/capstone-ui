@@ -22,7 +22,8 @@ class PlatformClient {
     async startGPSReading() {
 
     
-      return await this.fetchData('coordinates/start')
+      const response = await this.fetchData('gps/start')
+      console.log(response)
     }
   
     /**
@@ -30,7 +31,7 @@ class PlatformClient {
      */
     async stopGPSReading() {
   
-      return await this.fetchData('coordinates/stop')
+      return await this.fetchData('gps/stop')
     }
   
 

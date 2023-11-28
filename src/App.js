@@ -3,7 +3,7 @@ import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client'; // Breaks callback functionality by eliminating unused import
-import {onCustomEventResponse, connectSocket, disconnectSocket} from './api/SocketManager'
+import {onCustomEventResponse, connectSocket, disconnectSocket, test} from './api/SocketManager'
 
 
 const App = () => {
@@ -26,8 +26,20 @@ const App = () => {
       console.log("Browser geolocation not enabled")
     }
 
-    onCustomEventResponse()
   }, [])
+
+  useEffect(() => {
+    console.log('Before adding event listener');
+    onCustomEventResponse((data) => {
+      console.log(data);
+    });
+    console.log('After adding event listener');
+  
+    // Clean up the event listener when the component unmounts (optional)
+    return () => {
+      // Remove the event listener or perform any cleanup
+    };
+  }, []);
  
   function handleGeoLocationCenter(position) {
     const coords = position.coords;
@@ -87,7 +99,7 @@ const App = () => {
       } 
     } else  {
       setgpsButtonStatus(false)
-      await platformClient.startGPSReading()
+      await platformClient.stopGPSReading()
     }
   }
 

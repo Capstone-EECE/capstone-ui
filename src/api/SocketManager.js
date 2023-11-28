@@ -35,9 +35,22 @@ export const triggerCustomEvent = () => {
   }
 };
 
+export function test() {
+  if (socket) {
+    socket.on('coordinate', (data) => {
+      console.log(data)
+    });
+  } else {
+    console.error('Socket is not initialized. Call connectSocket() first.');
+  }
+}
+
+
 export const onCustomEventResponse = (callback) => {
   if (socket) {
-    socket.on('GPS', (data) => {
+    console.log('Adding event listener for coordinate');
+    socket.on('coordinate', (data) => {
+      console.log('Received coordinate data:', data);
       if (callback) {
         callback(data);
       }
