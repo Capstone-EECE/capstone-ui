@@ -1,18 +1,15 @@
-import Map from "./components/Map2"
+import Map from "./components/Map"
 import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import io from 'socket.io-client'; // Breaks callback functionality by eliminating unused import
-import {onCustomEventResponse, connectSocket, disconnectSocket} from './api/SocketManager'
+import {connectSocket, disconnectSocket} from './api/SocketManager'
 
 
 const App = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
   const [droneConnected, setDroneConnected] = useState(false)
   const [pointButtonStatus, setPointButtonStatus] = useState(false)
-  const [points, setPoints] = useState(null)
   const [gpsButtonStatus, setgpsButtonStatus] = useState(false)
-  const [coordinates, setCoordinates] = useState(null)
 
   
   /**
@@ -26,8 +23,8 @@ const App = () => {
       console.log("Browser geolocation not enabled")
     }
 
-    onCustomEventResponse()
   }, [])
+
  
   function handleGeoLocationCenter(position) {
     const coords = position.coords;
@@ -48,23 +45,11 @@ const App = () => {
     }
   }
 
-  
-
   const pointsEventHandler = async () => {
     if (pointButtonStatus === false) {
-      setPointButtonStatus(true)
-      const googleType = []
       try {
-        
-        const response = await platformClient.startSensorReading()
-
-        // SOCKET (?)
-        for (const coor of response) {
-          const latitude = coor[0];
-          const longitude = coor[1];
-          googleType.push(new google.maps.LatLng(latitude, longitude))
-        }
-        setPoints(googleType)
+        setPointButtonStatus(true)
+        await platformClient.startSensorReading()
       } catch(error) {
         console.log(error)
       } 
@@ -76,18 +61,15 @@ const App = () => {
 
   const coordinateEventHandler = async () => {
     if (gpsButtonStatus === false) {
-      setgpsButtonStatus(true)
-      try {
-        
-        const response = await platformClient.startGPSReading()
-        setCoordinates(response)
-        // SOCKET (?)
+      try { 
+        setgpsButtonStatus(true)
+        await platformClient.startGPSReading()
       } catch(error) {
         console.log(error)
       } 
     } else  {
       setgpsButtonStatus(false)
-      await platformClient.startGPSReading()
+      await platformClient.stopGPSReading()
     }
   }
 
@@ -102,9 +84,22 @@ const App = () => {
       <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
       <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
       <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
-      <Map points={points} droneLocation={0} droneConnected={droneConnected} mapCenter={mapCenter}/>
+      <Map droneConnected={droneConnected} mapCenter={mapCenter}/>
     </div>
   );
 };
 
 export default App;
+
+
+
+/* 
+      
+      const googleType = []
+        // SOCKET (?)
+        for (const coor of response) {
+          const latitude = coor[0];
+          const longitude = coor[1];
+          googleType.push(new google.maps.LatLng(latitude, longitude))
+        }
+*/

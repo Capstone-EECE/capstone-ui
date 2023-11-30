@@ -6,7 +6,7 @@ class PlatformClient {
   private apiUrl: string;
   
   constructor() {
-    this.apiUrl = config.apiUrl + '/frontend'
+    this.apiUrl = config.apiUrl + '/dummy'
   }
 
   /**
@@ -22,15 +22,17 @@ class PlatformClient {
     async startGPSReading() {
 
     
-      return await this.fetchData('coordinates/start')
+      const response = await this.fetchData('gps/start')
     }
+
+    
   
     /**
      * [GET] Stop sensor intake.
      */
     async stopGPSReading() {
   
-      return await this.fetchData('coordinates/stop')
+      return await this.fetchData('gps/stop')
     }
   
 
