@@ -6,7 +6,7 @@ class PlatformClient {
   private apiUrl: string;
   
   constructor() {
-    this.apiUrl = config.apiUrl + '/frontend'
+    this.apiUrl = config.apiUrl + '/dummy'
   }
 
   /**

@@ -2,7 +2,8 @@
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBus } from "@fortawesome/free-solid-svg-icons";
+import { faPlane } from "@fortawesome/free-solid-svg-icons";
+import React from 'react';
 
 
 let newMarker;
@@ -19,6 +20,16 @@ function Map({points, droneLocation, droneConnected, mapCenter }) {
     }
   }, [points, droneLocation, mapCenter, droneConnected]);
 
+
+  useEffect(() => {
+    // Update marker position when droneLocation changes
+    if (marker && droneLocation) {
+      const newMarkerPosition = new window.google.maps.LatLng(droneLocation.lat, droneLocation.lng);
+      newMarker.setPosition(newMarkerPosition);
+    }
+  }, [droneLocation, marker]);
+
+
   function initializeMap() {
     newMap = new window.google.maps.Map(document.getElementById('map'), {
       zoom: 9,
@@ -34,12 +45,12 @@ function Map({points, droneLocation, droneConnected, mapCenter }) {
       position: { lat: mapCenter.lat, lng: mapCenter.lng },
       map: newMap,
       icon: {
-        path: faBus.icon[4] as string,
+        path: faPlane.icon[4] as string,
         fillColor: "#0000ff",
         fillOpacity: 1,
         anchor: new google.maps.Point(
-          faBus.icon[0] / 2, // width
-          faBus.icon[1] // height
+          faPlane.icon[0] / 2, // width
+          faPlane.icon[1] // height
         ),
         strokeWeight: 1,
         strokeColor: "#ffffff",
@@ -53,17 +64,7 @@ function Map({points, droneLocation, droneConnected, mapCenter }) {
     setMarker(newMarker);
     setHeatmap(heatmap);
 
-    window.google.maps.event.addListenerOnce(newMarker, 'position_changed', () => {
-      updateMapCenter(newMarker.getPosition().toJSON())
-    });
-
-    simulateRealTimeUpdates();
-
-
-
-
-
-
+    //simulateRealTimeUpdates();
     
   }
 
@@ -78,22 +79,9 @@ function Map({points, droneLocation, droneConnected, mapCenter }) {
         };
   
         newMarker.setPosition(newLocation);
-        updateMapCenter(newLocation)
       }
     }, 1000)
   };
-
-  /**
-   * Updates the map center to the location
-   * @param location Lat Lng
-   */
-  const updateMapCenter = (location) => {
-    if (map) {
-      newMap.setCenter(location);
-    }
-    
-  };
-
 
   function toggleHeatmap() {
     if (heatmap) {
@@ -138,13 +126,13 @@ function Map({points, droneLocation, droneConnected, mapCenter }) {
 
   return (
     <div>
-      <div id="map" style={{ height: '600px', width: '100%' }}></div>
       <Button id="toggle-heatmap" variant="contained" color="primary" onClick={toggleHeatmap}>Toggle Heatmap</Button>
       <Button id="change-gradient" variant="contained" color="primary" onClick={changeGradient}>Change gradient</Button>
       <Button id="change-radius" variant="contained" color="primary" onClick={changeRadius}>Change radius</Button>
       <Button id="change-opacity" variant="contained" color="primary" onClick={changeOpacity}>Change opacity</Button>
+      <div id="map" style={{ height: '1000px', width: '100%' }}></div>
     </div>
   );
 }
 
-export default Map;
+export default React.memo(Map);
