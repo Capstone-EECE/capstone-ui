@@ -1,4 +1,4 @@
-import Map from "./components/Map2"
+import Map from "./components/Map"
 import { platformClient } from './api/PlatformClient';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -11,7 +11,6 @@ const App = () => {
   const [pointButtonStatus, setPointButtonStatus] = useState(false)
   const [points, setPoints] = useState(null)
   const [gpsButtonStatus, setgpsButtonStatus] = useState(false)
-  const [coordinates, setCoordinates] = useState(null)
 
   
   /**
@@ -26,18 +25,6 @@ const App = () => {
     }
 
   }, [])
-
-  useEffect(() => {
-    if (droneConnected) {
-      connectSocket().on('coordinate', (data) => {
-        console.log(data)
-        setCoordinates(data)
-      });
-      connectSocket().on('points', (data) => {
-        setPoints(data)
-      });
-    }
-  }, [droneConnected]); 
 
  
   function handleGeoLocationCenter(position) {
@@ -98,7 +85,7 @@ const App = () => {
       <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
       <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
       <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
-      <Map points={points} droneLocation={coordinates} droneConnected={droneConnected} mapCenter={mapCenter}/>
+      <Map points={points} droneConnected={droneConnected} mapCenter={mapCenter}/>
     </div>
   );
 };
