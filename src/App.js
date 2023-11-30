@@ -9,7 +9,6 @@ const App = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
   const [droneConnected, setDroneConnected] = useState(false)
   const [pointButtonStatus, setPointButtonStatus] = useState(false)
-  const [points, setPoints] = useState(null)
   const [gpsButtonStatus, setgpsButtonStatus] = useState(false)
 
   
@@ -85,7 +84,7 @@ const App = () => {
       <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
       <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
       <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
-      <Map points={points} droneConnected={droneConnected} mapCenter={mapCenter}/>
+      <Map droneConnected={droneConnected} mapCenter={mapCenter}/>
     </div>
   );
 };

@@ -1,16 +1,21 @@
 import { useEffect } from 'react';
-import {connectSocket} from '../api/SocketManager'
+import {getSocketInstance} from '../api/SocketManager'
 
 
 const Drone = ({ droneRef }) => {
 
-  useEffect(() => {
-    connectSocket().on('coordinate', (data) => {
-        console.log(data)
-        updateMarkerPosition(data)
-    });
+    useEffect(() => {
+        const socket = getSocketInstance();
     
-  }, []);
+        if (socket) {
+          socket.on('coordinate', (data) => {
+            updateMarkerPosition(data);
+          });
+        } else {
+          console.error('Socket is not initialized. Call connectSocket() first.');
+        }
+    
+      }, [droneRef]);
 
   const updateMarkerPosition = (data) => {
     const newMarkerPosition = new window.google.maps.LatLng(data.lat, data.lng);

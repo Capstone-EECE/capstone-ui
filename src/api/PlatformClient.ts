@@ -23,8 +23,9 @@ class PlatformClient {
 
     
       const response = await this.fetchData('gps/start')
-      console.log(response)
     }
+
+    
   
     /**
      * [GET] Stop sensor intake.

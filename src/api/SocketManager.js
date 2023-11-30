@@ -2,6 +2,10 @@ import io from 'socket.io-client';
 
 let socket = null;
 
+export const getSocketInstance = () => {
+  return socket;
+};
+
 export const connectSocket = () => {
   if (!socket) {
     socket = io("http://localhost:5235", {
@@ -20,7 +24,7 @@ export const connectSocket = () => {
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
-    socket = null; // Reset socket to null after disconnecting
+    socket = null; 
   } else {
     console.error('Socket is not initialized. Call connectSocket() first.');
   }

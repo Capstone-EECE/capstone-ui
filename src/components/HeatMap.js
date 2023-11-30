@@ -1,21 +1,24 @@
 import { useEffect } from 'react';
-import {connectSocket} from '../api/SocketManager'
+import {getSocketInstance} from '../api/SocketManager'
 
 function Heatmap({ heatmapRef }) {
-  useEffect(() => {
-    connectSocket().on('point', (data) => {
-        console.log(data)
-        updateDataArray(data)
-    });
-    }, [])
+    useEffect(() => {
+        const socket = getSocketInstance();
+    
+        if (socket) {
+          socket.on('point', (data) => {
+            console.log('point')
+            updateDataArray(data);
+          });
+        } else {
+          console.error('Socket is not initialized. Call connectSocket() first.');
+        }
+    
+      }, [heatmapRef]);
 
     const updateDataArray = (data) => {
-        // Get the current heatmap instance using the ref
         const heatmap = heatmapRef.current;
-    
-        // Convert MVCArray to a regular array
         const currentData = heatmap.getData().getArray();
-        console.log(currentData)
     
         const newDataPoint = [new window.google.maps.LatLng(data.lat, data.lng)];
         const updatedData = [...currentData, ...newDataPoint];

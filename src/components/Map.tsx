@@ -8,7 +8,7 @@ import Drone from './Drone'
 import Heatmap from './HeatMap';
 
 
-function Map({points, droneConnected, mapCenter }) {
+function Map({ droneConnected, mapCenter }) {
   const mapRef = useRef(null);
   const droneRef = useRef(null)
   const heatmapRef = useRef(null)
@@ -18,22 +18,22 @@ function Map({points, droneConnected, mapCenter }) {
     if (window.google) {
       initializeMap();
     }
-  }, [points, mapCenter, droneConnected]);
+  }, [mapCenter, droneConnected]);
 
   function initializeMap() {
     mapRef.current = new window.google.maps.Map(document.getElementById('map'), {
-      zoom: 13,
-      center: { lat: mapCenter.lat, lng: mapCenter.lng },
+      zoom: 15,
+      center: { lat: 42.327494, lng: -71.115162 },
     });
 
     heatmapRef.current = new window.google.maps.visualization.HeatmapLayer({
-      data: points? points : [0],
+      data: [],
       map: mapRef.current,
     });
 
     if (droneConnected) {
       droneRef.current = new window.google.maps.Marker({
-        position: { lat: mapCenter.lat, lng: mapCenter.lng },
+        position: { lat: 42.327494, lng: -71.115162 },
         map: mapRef.current,
         icon: {
           path: faPlane.icon[4] as string,
@@ -50,11 +50,7 @@ function Map({points, droneConnected, mapCenter }) {
         title: "FontAwesome SVG Marker",
         draggable: true
       });
-    }
-    //setHeatmap(heatmap);
-
-    //simulateRealTimeUpdates();
-    
+    };
   }
 
   function toggleHeatmap() {
@@ -104,9 +100,9 @@ function Map({points, droneConnected, mapCenter }) {
       <Button id="change-gradient" variant="contained" color="primary" onClick={changeGradient}>Change gradient</Button>
       <Button id="change-radius" variant="contained" color="primary" onClick={changeRadius}>Change radius</Button>
       <Button id="change-opacity" variant="contained" color="primary" onClick={changeOpacity}>Change opacity</Button>
-      <div id="map" style={{ height: '1000px', width: '100%' }}></div>
+      <div id="map" style={{ height: '900px', width: '100%' }}></div>
       {droneConnected? <Drone droneRef={droneRef}/> : null}
-      <Heatmap heatmapRef={heatmapRef} />
+      {droneConnected? <Heatmap heatmapRef={heatmapRef}/> : null}
     </div>
   );
 }
