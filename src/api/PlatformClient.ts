@@ -9,6 +9,11 @@ class PlatformClient {
     this.apiUrl = config.apiUrl + '/dummy'
   }
 
+  async requestLogin(name: string, password: string) {
+    const queryParams = {username: name, password: password}
+    return await this.fetchData('login', queryParams)
+  }
+
   /**
    * [GET] Query devices status 
    */

@@ -12,6 +12,7 @@ function Map({ droneConnected, mapCenter }) {
   const mapRef = useRef(null);
   const droneRef = useRef(null)
   const heatmapRef = useRef(null)
+  const infowindow = useRef(null)
   
 
   useEffect(() => {
@@ -50,13 +51,8 @@ function Map({ droneConnected, mapCenter }) {
         title: "FontAwesome SVG Marker",
         draggable: true
       });
+      
     };
-  }
-
-  function toggleHeatmap() {
-    if (heatmapRef) {
-      heatmapRef.current.setMap(heatmapRef.current.getMap() ? null : heatmapRef.current);
-    }
   }
 
   function changeGradient() {
@@ -96,13 +92,12 @@ function Map({ droneConnected, mapCenter }) {
 
   return (
     <div>
-      <Button id="toggle-heatmap" variant="contained" color="primary" onClick={toggleHeatmap}>Toggle Heatmap</Button>
       <Button id="change-gradient" variant="contained" color="primary" onClick={changeGradient}>Change gradient</Button>
       <Button id="change-radius" variant="contained" color="primary" onClick={changeRadius}>Change radius</Button>
       <Button id="change-opacity" variant="contained" color="primary" onClick={changeOpacity}>Change opacity</Button>
       <div id="map" style={{ height: '900px', width: '100%' }}></div>
       {droneConnected? <Drone droneRef={droneRef}/> : null}
-      {droneConnected? <Heatmap heatmapRef={heatmapRef}/> : null}
+      {droneConnected? <Heatmap heatmapRef={heatmapRef} mapRef={mapRef}/> : null}
     </div>
   );
 }
