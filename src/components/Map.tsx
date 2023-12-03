@@ -97,7 +97,7 @@ function Map({ droneConnected, mapCenter }) {
       <Button id="change-opacity" variant="contained" color="primary" onClick={changeOpacity}>Change opacity</Button>
       <div id="map" style={{ height: '900px', width: '100%' }}></div>
       {droneConnected? <Drone droneRef={droneRef}/> : null}
-      {droneConnected? <Heatmap heatmapRef={heatmapRef}/> : null}
+      {droneConnected? <Heatmap heatmapRef={heatmapRef} mapRef={mapRef}/> : null}
     </div>
   );
 }

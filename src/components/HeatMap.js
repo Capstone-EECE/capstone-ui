@@ -1,58 +1,70 @@
 import { useEffect, useRef } from 'react';
-import {getSocketInstance} from '../api/SocketManager'
+import { getSocketInstance } from '../api/SocketManager';
 
-function Heatmap({ heatmapRef }) {
-    const infowindow = useRef(null)
-    useEffect(() => {
-        const socket = getSocketInstance();
-    
-        if (socket) {
+function Heatmap({ heatmapRef, mapRef }) {
+  const infowindow = useRef(null);
 
-            infowindow.current = new google.maps.InfoWindow({
-                content: 'Hello World',
-                ariaLabel: "Uluru",
-              });
-              
-          socket.on('point', (data) => {
-            updateDataArray(data);
-          });
-        } else {
-          console.error('Socket is not initialized. Call connectSocket() first.');
-        }
-    
-      }, [heatmapRef]);
+  useEffect(() => {
+    const socket = getSocketInstance();
 
-    const updateDataArray = (data) => {
-        const heatmap = heatmapRef.current;
-        const currentData = heatmap.getData().getArray();
-    
-        const newDataPoint = [new window.google.maps.LatLng(data.lat, data.lng)];
-        const updatedData = [...currentData, ...newDataPoint];
-        heatmap.setData(updatedData);
+    if (socket) {
+      infowindow.current = new window.google.maps.InfoWindow({
+        content: 'Hello World',
+        ariaLabel: 'Uluru',
+      });
 
-        const invisibleMarker = new window.google.maps.Marker({
-            position: new window.google.maps.LatLng(data.lat, data.lng),
-            map: heatmap.getMap(), // Make sure it's added to the map
-            icon: {
-              url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAAAWAAAAHQAAh3YAAAAASUVORK5CYII=', // Transparent image
-              size: new window.google.maps.Size(1, 1), // Set size to 1x1 to make it effectively invisible
-              origin: new window.google.maps.Point(0, 0),
-              anchor: new window.google.maps.Point(0, 0),
-            },
-          });
-    
+      const circles = []; 
 
-          // Add a click event listener to the invisible marker
-          invisibleMarker.addListener('click', () => {
-            // Handle click event, you can customize this based on your requirements
-            infowindow.current.setContent(`Clicked on point at Latitude: ${data.lat}, Longitude: ${data.lng}`);
-            infowindow.current.setPosition(invisibleMarker.getPosition());
-            infowindow.current.open(heatmap.getMap());
-          });
+      socket.on('point', (data) => {
+        const circle = createInvisibleCircle(mapRef.current, data);
+        circles.push(circle);
+        updateDataArray(data);
+      });
+
+      // Cleanup markers when the component unmounts
+      return () => {
+        circles.forEach((circle) => circle.setMap(null));
       };
-  return null; 
+    } else {
+      console.error('Socket is not initialized. Call connectSocket() first.');
+    }
+  }, [heatmapRef, mapRef]);
+
+  const createInvisibleCircle = (map, data) => {
+    const circle = new window.google.maps.Circle({
+      center: new window.google.maps.LatLng(data.lat, data.lng),
+      map: map,
+      radius: 10,
+      strokeColor: 'transparent',
+      fillColor: 'transparent',
+      fillOpacity: 0,
+    });
+  
+    // Add a click event listener to the invisible circle
+    window.google.maps.event.addListener(circle, 'click', () => {
+      handleCircleClick(data);
+    });
+  
+    return circle;
+  };
+
+  const updateDataArray = (data) => {
+    const heatmap = heatmapRef.current;
+    const currentData = heatmap.getData().getArray();
+
+    const newDataPoint = new window.google.maps.LatLng(data.lat, data.lng);
+    const updatedData = [...currentData, newDataPoint];
+    heatmap.setData(updatedData);
+  };
+
+  const handleCircleClick = (data) => {
+    const clickedLocation = new window.google.maps.LatLng(data.lat, data.lng);
+    infowindow.current.setContent(`Clicked at Latitude: ${data.lat}, Longitude: ${data.lng}`);
+    infowindow.current.setPosition(clickedLocation);
+    infowindow.current.open(mapRef.current);
+  };
+
+  return null;
 }
-
-
 
 export default Heatmap;
