@@ -11,6 +11,7 @@ const Drone = ({ droneRef }) => {
           socket.on('coordinate', (data) => {
             updateMarkerPosition(data);
           });
+
         } else {
           console.error('Socket is not initialized. Call connectSocket() first.');
         }

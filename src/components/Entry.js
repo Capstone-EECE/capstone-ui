@@ -85,13 +85,13 @@ const Entry = () => {
   return (
     <div>
       <Grid container spacing={2}>
-        <Grid item xs={8}>
+      <Grid item xs={12}>
+          <BatteryComponent droneConnected={droneConnected}/>
+        </Grid>
+        <Grid item xs={12}>
         <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
         <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
         <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
-        </Grid>
-        <Grid item xs={4}>
-          <BatteryComponent droneConnected={droneConnected}/>
         </Grid>
       </Grid>
       <Map droneConnected={droneConnected} mapCenter={mapCenter}/>

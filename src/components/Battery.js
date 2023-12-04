@@ -38,7 +38,7 @@ const BatteryComponent = ({ droneConnected }) => {
   
 
   return (
-    <BatteryGauge value={batteryLevel} customization={customizationOptions} />
+    <BatteryGauge size={200} value={batteryLevel} customization={customizationOptions} />
   );
 };
 
