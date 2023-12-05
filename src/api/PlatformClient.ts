@@ -6,7 +6,7 @@ class PlatformClient {
   private apiUrl: string;
   
   constructor() {
-    this.apiUrl = config.apiUrl + '/dummy'
+    this.apiUrl = config.apiUrl + '/demo'
   }
 
   async requestLogin(name: string, password: string) {

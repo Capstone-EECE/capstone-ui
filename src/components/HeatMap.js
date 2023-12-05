@@ -59,7 +59,7 @@ function Heatmap({ heatmapRef, mapRef }) {
 
   const handleCircleClick = (data) => {
     const clickedLocation = new window.google.maps.LatLng(data.lat, data.lng);
-    infowindow.current.setContent(`Latitude: ${data.lat} <br> Longitude: ${data.lng} <br> Ice Thickness: ${data.value} inches`);
+    infowindow.current.setContent(`Latitude: ${data.lat} <br> Longitude: ${data.lng} <br> Ice Thickness: ${data.value}.00 inches`);
     infowindow.current.setPosition(clickedLocation);
     infowindow.current.open(mapRef.current);
   };

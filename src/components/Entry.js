@@ -4,6 +4,7 @@ import { platformClient } from '../api/PlatformClient';
 import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {connectSocket, disconnectSocket} from '../api/SocketManager'
+import WeatherApp from "./Weather";
 
 const Entry = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
@@ -17,6 +18,7 @@ const Entry = () => {
    */
   useEffect(() => {
     if (navigator.geolocation) {
+
       navigator.geolocation.getCurrentPosition(handleGeoLocationCenter, () => {}, { enableHighAccuracy: true });
     }
     else {
@@ -85,14 +87,20 @@ const Entry = () => {
   return (
     <div>
       <Grid container spacing={2}>
-      <Grid item xs={12}>
-          <BatteryComponent droneConnected={droneConnected}/>
+        <Grid item xs={6}>
+            <Grid item xs={12}>
+              <BatteryComponent droneConnected={droneConnected}/>
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
+              <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
+              <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
+            </Grid>
         </Grid>
-        <Grid item xs={12}>
-        <Button onClick={connectToDrone} type="submit" variant="contained" color="primary"> {droneConnected? "Disconnect drone" : "Connect Drone"} </Button>
-        <Button onClick={coordinateEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {gpsButtonStatus? "Stop GPS" : "Start GPS"} </Button>
-        <Button onClick={pointsEventHandler} type="submit" variant="contained" color="primary" disabled={!droneConnected}> {pointButtonStatus? "Stop Readings" : "Request Readings"} </Button>
+        <Grid item xs={6}>
+          <WeatherApp latitude={42.319121} longitude={-71.120366} />
         </Grid>
+
       </Grid>
       <Map droneConnected={droneConnected} mapCenter={mapCenter}/>
     </div>

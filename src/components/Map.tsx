@@ -24,7 +24,7 @@ function Map({ droneConnected, mapCenter }) {
   function initializeMap() {
     mapRef.current = new window.google.maps.Map(document.getElementById('map'), {
       zoom: 15,
-      center: { lat: 42.319121, lng: -71.120366 },
+      center: { lat: mapCenter.lat, lng: mapCenter.lng },
     });
 
     heatmapRef.current = new window.google.maps.visualization.HeatmapLayer({
@@ -34,11 +34,11 @@ function Map({ droneConnected, mapCenter }) {
 
     if (droneConnected) {
       droneRef.current = new window.google.maps.Marker({
-        position: { lat: 42.319121, lng: -71.120366 },
+        position: { lat: mapCenter.lat, lng: mapCenter.lng },
         map: mapRef.current,
         icon: {
           path: faPlane.icon[4] as string,
-          fillColor: "#0000ff",
+          fillColor: "#000000",
           fillOpacity: 1,
           anchor: new google.maps.Point(
             faPlane.icon[0] / 2, // width
